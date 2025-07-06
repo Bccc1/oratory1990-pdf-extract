@@ -3,6 +3,7 @@
   const dropArea = document.querySelector("#drop-area");
   const reader = new FileReader()
     const fileUpload = document.querySelector("#file-upload")
+  const downloadBtn = document.getElementById('download-btn');
 
   const filterTypeHeaderName = "Filter Type";
   const frequencyHeaderName = "Frequency";
@@ -12,6 +13,8 @@
 
   var eqs = [];
   var preampGain = 0;
+
+  var filename = "eq-preset";
 
   function extract(src) {
     getContent(src)
@@ -141,6 +144,10 @@
 
 fileUpload.addEventListener("change", (event) => {
     let file = event.target.files[0]
+    
+    if (file) {
+        filename = file.name.replace(/\.[^/.]+$/, ""); // Remove extension for use as base filename
+    }
 
     // TODO probably check if we've got the right file
 
@@ -204,5 +211,18 @@ function dragOverHandler(ev) {
     //   }
     // }
   }
+
+  downloadBtn.addEventListener('click', function () {
+    const content = document.getElementById('content').innerText;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
 
 })(pdfjsLib);
